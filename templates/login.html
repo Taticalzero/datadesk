@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login · DataDesk</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/static/css/login.css" />
+  </head>
+  <body>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+
+    <div class="login-card">
+      <p class="login-mark">DataDesk Loop</p>
+      <h1 class="login-title">Bem-vindo</h1>
+      <p class="login-sub">Acesse a central de relatórios</p>
+
+      {% if error %}
+      <div class="alert-error">⚠ {{ error }}</div>
+      {% endif %}
+
+      <form method="post" action="/login">
+        <div class="field">
+          <label for="username">Usuário</label>
+          <input
+            type="text"
+            id="username"
+            name="username"
+            placeholder="seu.usuario"
+            required
+            autofocus
+          />
+        </div>
+        <div class="field">
+          <label for="password">Senha</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="••••••••"
+            required
+          />
+        </div>
+        <button type="submit" class="btn-login">Entrar →</button>
+      </form>
+    </div>
+  </body>
+</html>

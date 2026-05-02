@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% block title %}{{ cfg.title }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/report.css">
+{% endblock %}
+
+{% block body %}
+<aside class="sidebar">
+    <div class="sidebar-logo">
+        <p class="mark">DataDesk</p>
+        <h1>Relatórios</h1>
+    </div>
+    <nav class="sidebar-nav">
+        <p class="nav-section">Menu</p>
+        <a href="/" class="nav-item">
+            <span class="nav-icon">⊞</span> Dashboard
+        </a>
+        <p class="nav-section" style="margin-top:12px">Relatórios</p>
+        {% for id, c in reports.items() %}
+        <a href="/report/{{ id }}" class="nav-item {% if id == report_id %}active{% endif %}">
+            <span class="nav-icon">{{ c.icon or '📋' }}</span>
+            {{ c.title }}
+        </a>
+        {% endfor %}
+    </nav>
+    <div class="sidebar-footer">
+        <div class="user-chip">
+            <div class="user-avatar">{{ user.username[0].upper() }}</div>
+            <div>
+                <div class="user-name">{{ user.username }}</div>
+                <div class="user-role">{{ user.role }}</div>
+            </div>
+        </div>
+        <a href="/logout" class="logout-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                <polyline points="16 17 21 12 16 7"/>
+                <line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+            Sair
+        </a>
+    </div>
+</aside>
+
+<main class="main">
+    <div class="page-header">
+        <p class="breadcrumb">DataDesk · <a href="/" style="color:inherit;text-decoration:none">Dashboard</a> · {{ cfg.title }}</p>
+        <h2>{{ cfg.icon or '' }} {{ cfg.title }}</h2>
+    </div>
+
+    <div class="page-content">
+
+        {% if error %}
+        <div class="alert-error">⚠ Erro na query: {{ error }}</div>
+        {% endif %}
+
+        {% if cfg.query_param %}
+        <form class="param-form" method="get">
+            <label>{{ cfg.param_label or cfg.query_param }}</label>
+            <input
+                type="text"
+                name="{{ cfg.query_param }}"
+                value="{{ param_value or '' }}"
+                placeholder="{{ cfg.param_placeholder or '' }}"
+            >
+            <button type="submit" class="btn btn-primary">Executar</button>
+        </form>
+        {% endif %}
+
+        <div class="toolbar">
+            <div class="toolbar-left">
+                <div class="search-box">
+                    <input type="text" id="search-input" placeholder="Filtrar resultados...">
+                </div>
+                {% if rows %}
+                <span class="result-count" id="count-label">{{ rows | length }} registros</span>
+                {% endif %}
+            </div>
+            {% if rows %}
+            <a
+                href="/report/{{ report_id }}/download{% if cfg.query_param and param_value %}?{{ cfg.query_param }}={{ param_value }}{% endif %}"
+                class="btn btn-download"
+                download
+            >
+                ↓ Baixar CSV
+            </a>
+            {% endif %}
+        </div>
+
+        {% if rows %}
+        <div class="table-wrap">
+            <div class="table-container">
+                <table id="data-table" data-total="{{ rows | length }}">
+                    <thead>
+                        <tr>
+                            {% for col in columns %}
+                            <th>{{ col }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in rows %}
+                        <tr>
+                            {% for col in columns %}
+                            {% set val = row[col] %}
+                            <td class="{% if val is none %}null-cell{% endif %}">
+                                {{ val if val is not none else 'NULL' }}
+                            </td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        {% elif not error %}
+        <div class="card">
+            <div class="empty-state">
+                <div class="icon">🔍</div>
+                <p>
+                    {% if cfg.query_param and not param_value %}
+                        Informe o parâmetro acima e clique em Executar.
+                    {% else %}
+                        Nenhum resultado encontrado para esta consulta.
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+</main>
+{% endblock %}
+
+{% block extra_js %}
+<script src="/static/js/report.js"></script>
+{% endblock %}

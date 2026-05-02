@@ -1,0 +1,38 @@
+# ── Ambiente virtual ──────────────────────────────────
+.venv/
+venv/
+env/
+
+# ── uv ────────────────────────────────────────────────
+.uv/
+uv.lock
+
+# ── Variáveis de ambiente (NUNCA commitar) ────────────
+.env
+
+# ── Python ────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+*.egg
+
+# ── Logs ──────────────────────────────────────────────
+*.log
+logs/
+
+# ── Editores ──────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# ── Testes ────────────────────────────────────────────
+.pytest_cache/
+.coverage
+htmlcov/
