@@ -10,6 +10,12 @@ uv.lock
 # ── Variáveis de ambiente (NUNCA commitar) ────────────
 .env
 
+# ── Banco de usuários SQLite (NUNCA commitar) ─────────
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+
 # ── Python ────────────────────────────────────────────
 __pycache__/
 *.py[cod]

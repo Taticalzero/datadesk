@@ -1,43 +1,28 @@
 """
 app/auth.py
-Autenticacao JWT. Usa bcrypt diretamente (sem passlib) para compatibilidade
-com Python 3.14.
+Autenticacao JWT. Usuarios sao lidos do banco SQLite (app/users_db.py).
+Bcrypt usado diretamente (sem passlib) para compatibilidade com Python 3.14.
 """
-import os, json, bcrypt
+import os
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 from jose import JWTError, jwt
-from fastapi import Depends, HTTPException, status, Cookie
+from fastapi import HTTPException, Cookie
 from dotenv import load_dotenv
+
+from app.users_db import authenticate as _authenticate_db
 
 load_dotenv()
 
-SECRET_KEY   = os.getenv("SECRET_KEY", "dev-secret-change-me")
-ALGORITHM    = os.getenv("ALGORITHM", "HS256")
-EXPIRE_MIN   = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 480))
-
-
-def _load_users() -> list[dict]:
-    try:
-        return json.loads(os.getenv("USERS_JSON", "[]"))
-    except Exception:
-        return []
-
-
-def verify_password(plain: str, hashed: str) -> bool:
-    return bcrypt.checkpw(plain.encode(), hashed.encode())
-
-
-def hash_password(plain: str) -> str:
-    return bcrypt.hashpw(plain.encode(), bcrypt.gensalt()).decode()
+SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-change-me")
+ALGORITHM  = os.getenv("ALGORITHM", "HS256")
+EXPIRE_MIN = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 480))
 
 
 def authenticate_user(username: str, password: str) -> Optional[dict]:
-    for user in _load_users():
-        if user["username"] == username and verify_password(password, user["password_hash"]):
-            return user
-    return None
+    """Valida credenciais contra o banco SQLite de usuarios."""
+    return _authenticate_db(username, password)
 
 
 def create_access_token(data: dict) -> str:
